@@ -1,6 +1,6 @@
 from datetime import datetime
 
-# List of encodings to try ouy
+# List of encodings to try out
 encodings = ['utf-8', 'latin-1', 'windows-1252']
 
 file_path = input("Provide a file path: ")
