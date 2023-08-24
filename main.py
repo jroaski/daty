@@ -1,52 +1,49 @@
 from datetime import datetime
 
-# List of encodings to try
-encodings = ['utf-8', 'latin-1', 'windows-1252']
+# Read the content of the text file
+with open(r'C:\Users\Jacob\Downloads\kazaniatxt.txt', 'r') as file:
+    lines = file.readlines()
 
-file_path = input("Provide a file path: ")
-
-for encoding in encodings:
-    try:
-        with open(file_path, 'r', encoding=encoding) as file:
-            text = file.read()
-        break  # Break the loop if file reading succeeds
-    except UnicodeDecodeError:
-        continue  # Try the next encoding if reading fails
-dates = []
-for word in text.split():
-    try:
-
-        date = datetime.strptime(word, '%Y.%m.%d')
-        dates.append(date)
-    except ValueError:
+# Parse dates and create a list of tuples (date, line)
+date_lines = []
+for line in lines:
+    parts = line.strip().split('\t')  # Assuming the date is tab-separated
+    if len(parts) == 2:
+        date_str = parts[0]
+        content = parts[1]
         try:
-            # If the parsing fails, try parsing the date assuming the format is 'DD-MM-YYYY'
-            date = datetime.strptime(word, '%d.%m.%Y')
-            dates.append(date)
+            date = datetime.strptime(date_str, '%Y-%m-%d')
+            date_lines.append((date, line))
         except ValueError:
-            pass
+            pass  # Skip lines with invalid dates
+
+# Define a function to extract the date from a tuple
+def get_date(item):
+    return item[0]
+
+# Sort the list of tuples by date
+date_lines.sort(key=get_date)
+
+# Write the sorted content back to the text file
+with open('sorted_output.txt', 'w') as file:
+    for date, line in date_lines:
+        file.write(line)
+
+print("File sorted by dates and saved as 'sorted_output.txt'")
 
 
-dates.sort()
+def main():
+    file_path = input("Provide a file path: ")
+    input_text = load_text(file_path)
 
-# Split the text by dates
-text_parts = []
-prev_date = None
-for date in dates:
-    if prev_date is not None:
-        index = text.find(prev_date.strftime('%Y.%m.%d')) or text.find(prev_date.strftime('%d.%m.%Y'))
-        text_parts.append(text[:index].strip())
-        text = text[index:]
-    prev_date = date
+    if input_text is None:
+        print("Failed to load the file. Please check the path and encoding.")
+        return
 
-# Append the remaining text
-text_parts.append(text.strip())
+    text_parts = split_text_by_dates(input_text)
+    save_text_parts(text_parts)
 
-# Save the divided text as separate file
-for i, part in enumerate(text_parts):
-    filename = f'output_{i+1}.txt'
-    with open(filename, 'w', encoding='utf-8') as file:
-        file.write(part)
-    print(f'Saved {filename}')
+    print('Splitting and saving complete.')
 
-print('Splitting and saving complete.')
+if __name__ == "__main__":
+    main()
