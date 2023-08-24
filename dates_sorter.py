@@ -1,4 +1,6 @@
 from datetime import datetime
+import os
+
 
 def get_date(line):
     date_format = "%d.%m.%Y"
@@ -10,6 +12,8 @@ def get_date(line):
         except ValueError:
             pass
     return None
+
+
 # Function for sorting
 def sort_key(group):
     date = get_date(group[0])
@@ -19,10 +23,27 @@ def sort_key(group):
     return date
 
 
-input_file = r"C:\Users\Jacob\Desktop\daty.txt"
+def get_valid_file_path(prompt, default_path):
+    while True:
+        input_file = input(prompt)
+
+        if input_file == "":
+            return default_path
+        else:
+            if os.path.exists(input_file):
+                return input_file
+            else:
+                print("Invalid path. Please provide a valid file path.")
+
+
+# Example usage
+default_path = r"C:\Users\Jacob\Desktop\daty.txt"
+input_path = get_valid_file_path("Provide a path (or press Enter for default): ", default_path)
+print("Selected file path:", input_path)
+
 output_file = "sorted_output.txt"
 
-with open(input_file, 'r') as f:
+with open(input_path, 'r') as f:
     lines = f.readlines()
 
 # Split lines into groups based on dates
@@ -37,7 +58,7 @@ for line in lines:
     else:
         current_group.append(line)
 
-# Append the last group
+# Add the last group if it exists
 if current_group:
     line_groups.append(current_group)
 
