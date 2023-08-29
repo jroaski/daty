@@ -29,3 +29,15 @@ def extract_dates_and_text(full_text):
     return unmapped_text, mapped_text
 
 
+def save_text_to_file(text, file_path):
+    with open(file_path, 'w') as f:
+        f.write(text)
+
+
+input_file_path = r"C:\Users\Jacob\Downloads\kazaniatxt.txt"
+output_file_path = r"C:\Users\Jacob\Downloads\output.txt"
+
+full_text = read_text_file(input_file_path)
+unmapped_text, mapped_text = extract_dates_and_text(full_text)
+
+save_text_to_file(unmapped_text, output_file_path)
