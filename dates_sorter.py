@@ -13,6 +13,7 @@ def get_date(line):
             pass
     return None
 
+
 #sorts by key and grops together lines, so it goes date-> text...
 def sort_key(group):
     date = get_date(group[0])
