@@ -23,10 +23,10 @@ def extract_dates_and_text(full_text):
 
         previous_key = new_key
 
-    unmapped_text = full_text[0:first_date_beginning]
-    mapped_text = '\n\n'.join([full_text[key[1]:value] for key, value in sorted(text_dict.items())])
+    unmapped_text_result = full_text[:first_date_beginning]
+    mapped_text_result = '\n\n'.join([full_text[key[1]:value] for key, value in sorted(text_dict.items())])
 
-    return unmapped_text, mapped_text
+    return unmapped_text_result, mapped_text_result
 
 
 def save_text_to_file(text, file_path):
@@ -37,7 +37,7 @@ def save_text_to_file(text, file_path):
 input_file_path = r"C:\Users\Jacob\Downloads\kazaniatxt.txt"
 output_file_path = r"C:\Users\Jacob\Downloads\output.txt"
 
-full_text = read_text_file(input_file_path)
-unmapped_text, mapped_text = extract_dates_and_text(full_text)
+full_text_results = read_text_file(input_file_path)
+unmapped_text_results, mapped_text = extract_dates_and_text(full_text)
 
 save_text_to_file(unmapped_text, output_file_path)
