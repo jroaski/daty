@@ -14,13 +14,16 @@ class FunctionsTests(unittest.TestCase):
         line = "Text without date"
         result = get_date(line)
         self.assertIsNone(result)
-
+# parameterise?
+#change name to be more straightforward
     def test_key_valid_date(self):
         group = ["10.08.2023 Some text"]
         result = sort_key(group)
         expected = datetime(2023, 8, 10)
         self.assertEqual(result, expected)
 
+
+# what if date is inside the line, not at the beginning of it
     def test_lines_by_dates(self):
         lines = [
             "01.08.2023 radom shrandom words",
