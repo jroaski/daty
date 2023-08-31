@@ -3,15 +3,16 @@ import os
 
 
 def get_date(line):
-    date_format = "%d.%m.%Y"
-    parts = line.strip().split(' ')
-    for part in parts:
-        try:
-            date = datetime.strptime(part, date_format)
-            return date
-        except ValueError:
-            pass
-    return None
+    date_formats = ["%d.%m.%Y", "%Y-%m-%d", "%d-%m-%Y"]
+    for date_format in date_formats:
+        parts = line.strip().split(' ')
+        for part in parts:
+            try:
+                date = datetime.strptime(part, date_format)
+                return date
+            except ValueError:
+                pass
+        return None
 
 
 #sorts by key and grops together lines, so it goes date-> text...
@@ -35,8 +36,8 @@ def get_valid_file_path(prompt, default_path):
                 print("Invalid path. Please provide a valid file path.")
 
 
-def read_lines_from_file(file_path):
-    with open(file_path, 'r') as f:
+def read_lines_from_file(file_path, encoding='utf-8'):
+    with open(file_path, 'r', encoding=encoding) as f:
         lines = f.readlines()
     return lines
 
@@ -65,8 +66,8 @@ def sort_groups(line_groups):
     return sorted_lines
 
 
-def write_lines_to_file(lines, output_file):
-    with open(output_file, 'w', encoding='utf-8') as f:
+def write_lines_to_file(lines, output_file, encoding='utf-8'):
+    with open(output_file, 'w', encoding=encoding) as f:
         f.writelines(lines)
 
 
@@ -77,10 +78,10 @@ def main():
 
     output_file = "sorted_output.txt"
 
-    lines = read_lines_from_file(input_path)
+    lines = read_lines_from_file(input_path, encoding='utf-8')
     line_groups = group_lines_by_dates(lines)
-    sorted_lines = sort_and_flatten_groups(line_groups)
-    write_lines_to_file(sorted_lines, output_file)
+    sorted_lines = sort_groups(line_groups)
+    write_lines_to_file(sorted_lines, output_file, encoding='utf-8')
 
     print("Text file sorted by dates.")
 
