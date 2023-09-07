@@ -1,6 +1,6 @@
+import logging
 from datetime import datetime
 import os
-
 
 
 # todo: regex instead of dividing  by words
@@ -17,7 +17,7 @@ def get_date(line):
                 return date
             except ValueError:
                 pass
-        return None
+    return None
 
 # todo: normalize dateformat, while sorting date it should sort by key, which  is a single type of date :DD-MM-YYYY
 #sorts by key and grops together lines, so it goes date-> text...
@@ -35,11 +35,7 @@ def get_valid_file_path(prompt, default_path):
         if input_file == "":
             return default_path
         #can be deleted
-        else:
-            if os.path.exists(input_file):
-                return input_file
-            else:
-                print("Invalid path. Please provide a valid file path.")
+
 
 # todo: add typing
 def read_lines_from_file(file_path, encoding: str = 'utf-8') -> str:
@@ -51,26 +47,27 @@ def read_lines_from_file(file_path, encoding: str = 'utf-8') -> str:
 # todo: check defaultdict
 #todo: try to get rid  of line 61, so I can make it generic
 def group_lines_by_dates(lines):
-    line_groups = []
-    current_group = []
+    date_line_dict = {}
+    current_date = None
 
     for line in lines:
-        if get_date(line):
-            if current_group:
-                line_groups.append(current_group)
-            current_group = [line]
-        else:
-            current_group.append(line)
+        date = get_date(line)
+        if date:
+            current_date = date
+            date_line_dict[current_date] = []
 
-    if current_group:
-        line_groups.append(current_group)
+        if current_date:
+            date_line_dict[current_date].append(line)
 
-    return line_groups
+    return date_line_dict
 
 
-def sort_and_flatten_groups(line_groups):
-    sorted_line_groups = sorted(line_groups, key=sort_key, reverse=True) #lambda
-    sorted_lines = [line for group in sorted_line_groups for line in group]
+def sort_and_flatten_groups(date_line_dict):
+    sorted_dates = sorted(date_line_dict.keys(), key=lambda x: (x.year, x.month, x.day), reverse=True) #lambda
+    sorted_lines = []
+    for date in sorted_dates:
+        sorted_lines.extend(date_line_dict[date])
+
     return sorted_lines
 
 
@@ -91,9 +88,9 @@ def main():
     output_file = "sorted_output.txt"
 
     lines = read_lines_from_file(input_path, encoding='utf-8')
-    line_groups = group_lines_by_dates(lines)
+    date_line_dict = group_lines_by_dates(lines)
     # todo: setup pycharm so it properly points to references by cltr lclick
-    sorted_lines = sort_and_flatten_groups(line_groups)
+    sorted_lines = sort_and_flatten_groups(date_line_dict)
     write_lines_to_file(sorted_lines, output_file, encoding='utf-8')
 
     print("Text file sorted by dates.")
