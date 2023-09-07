@@ -1,3 +1,5 @@
+import re
+import logging
 from datetime import datetime
 import os
 from typing import List, Dict, Optional
@@ -21,6 +23,7 @@ def get_date(line: str) -> Optional[datetime]:
                 date = datetime.strptime(part, date_format)
                 return date
             except ValueError:
+                logging.error("Invalid date")
                 pass
     return None
 
