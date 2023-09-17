@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import datetime
 from typing import List, Dict, Optional
@@ -5,23 +6,25 @@ import argparse
 import logging
 from collections import defaultdict
 
-
+# Configure logging
 logging.basicConfig(filename='log.txt', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
+# Define date formats
 date_formats = ["%d.%m.%Y", "%Y-%m-%d", "%d-%m-%Y"]
 
+# Define a regular expression pattern for date detection
 date_pattern = rf"\d{{2}}[-./]\d{{2}}[-./]\d{{4}}|\d{{4}}[-./]\d{{2}}[-./]\d{{2}}"
 
 
-def get_date(line: str) -> Optional[datetime]:
+def get_date(line: str) -> Optional[str]:
     match = re.search(date_pattern, line)
     if match:
         date_str = match.group()
         for date_format in date_formats:
             try:
                 date = datetime.strptime(date_str, date_format)
-                return date
+                return date.strftime("%d.%m.%Y")  # Normalize to DD.MM.YYYY format
             except ValueError:
                 pass
     return None
@@ -54,15 +57,20 @@ def read_lines_from_file(file_path: str, encoding: str = 'utf-8') -> List[str]:
 # todo: date as a key in dict, lines just as a value, lists
 # todo: check defaultdict
 
-def group_lines_by_dates(lines: List[str]) -> Dict[datetime, List[str]]:
+def group_lines_by_dates(lines: List[str]) -> Dict[str, List[str]]:
     date_line_dict = defaultdict(list)
     current_date = None
+    list_of_dates=[]
 
     for line in lines:
         date = get_date(line)
-        if date:
-            current_date = date
-            date_line_dict[current_date] = []
+        if date in list_of_dates:
+            current_date=date
+        else:
+            if date:
+                current_date = date
+                date_line_dict[current_date] = []
+                list_of_dates.append(date)
 
         if current_date:
             date_line_dict[current_date].append(line)
@@ -72,28 +80,31 @@ def group_lines_by_dates(lines: List[str]) -> Dict[datetime, List[str]]:
     return date_line_dict
 
 
-def sort_and_flatten_groups(date_line_dict: Dict[datetime, List[str]]) -> List[str]:
-    sorted_dates = sorted(date_line_dict.keys(), key=lambda x: (x.year, x.month, x.day), reverse=True)
-    sorted_lines = [line for date in sorted_dates for line in date_line_dict[date]]
+def sort_and_flatten_groups(date_line_dict: Dict[str, List[str]]) -> List[str]:
+    sorted_lines = []
+
+    sorted_dates = sorted(set(date_line_dict.keys()), key=lambda x: datetime.strptime(x, "%d.%m.%Y"), reverse=True)
+
+    for date in sorted_dates:
+        # Add text lines
+        sorted_lines.extend(date_line_dict[date])
+
+        # Add an empty line for separation
+        sorted_lines.append("")
+
     return sorted_lines
 
 
-def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf-8', date_format="%d.%m.%Y") -> None:
+def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf-8') -> None:
     with open(output_file, 'w', encoding=encoding) as f:
-        for line in lines:
-            if re.search(date_pattern, line):
-                date = get_date(line)
-                if date:
-                    formatted_date = date.strftime(date_format)
-                    f.write(formatted_date + "\n")
-            else:
-                f.write(line)
+        f.write('\n'.join(lines))
+
+
 def group_text_by_dates():
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
     parser.add_argument("--use_default", action="store_true")
     parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt")
-    parser.add_argument("--output_file", type=str, default="sorted_output.txt",
-                        help="Path to the output sorted text file")
+    parser.add_argument("--output_file", type=str, default="sorted_output.txt")
 
     args = parser.parse_args()
 
