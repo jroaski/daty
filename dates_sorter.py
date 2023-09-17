@@ -5,10 +5,10 @@ from typing import List, Dict, Optional
 import argparse
 from collections import defaultdict
 
-# todo: regex instead of dividing  by words
+# todo: regex instead of dividing by words
 
-# todo: add info if block of  text has no date assigned
-#: todo: logging, as in file logs, import logging...
+# todo: add info if a block of text has no date assigned
+# todo: logging, as in file logs, import logging...
 
 # Define date formats
 date_formats = ["%d.%m.%Y", "%Y-%m-%d", "%d-%m-%Y"]
@@ -30,8 +30,8 @@ def get_date(line: str) -> Optional[datetime]:
     return None
 
 
-# todo: normalize dateformat, while sorting date it should sort by key, which  is a single type of date :DD-MM-YYYY
-# sorts by key and grops together lines, so it goes date-> text...
+# todo: normalize date format, while sorting date, it should sort by a key, which is a single type of date: DD-MM-YYYY
+# sorts by key and groups together lines, so it goes date-> text...
 
 
 def get_valid_file_path(prompt: str, default_path: str) -> str:
@@ -83,22 +83,36 @@ def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf
         f.writelines(lines)
 
 
-def group_text_by_dates(default_path: str):
-    input_path = get_valid_file_path(f"Provide a path (or press Enter for default: {default_path}): ", default_path)
-    print("Selected file path:", input_path)
-    output_file = "sorted_output.txt"
+def group_text_by_dates():
+    parser = argparse.ArgumentParser(description="Sort text lines by dates.")
+    parser.add_argument("--use_default", action="store_true", help="Use the default input file path")
+    parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt",
+                        help="Path to the input text file")
+    parser.add_argument("--output_file", type=str, default="sorted_output.txt",
+                        help="Path to the output sorted text file")
+
+    args = parser.parse_args()
+
+    if args.use_default:
+        input_path = args.input_file
+    else:
+        input_path = get_valid_file_path("Enter the path to the input text file: ", args.input_file)
+
+    output_path = args.output_file
+
+    print("Selected input file path:", input_path)
+    print("Selected output file path:", output_path)
 
     lines = read_lines_from_file(input_path, encoding='utf-8')
     date_line_dict = group_lines_by_dates(lines)
     sorted_lines = sort_and_flatten_groups(date_line_dict)
-    write_lines_to_file(sorted_lines, output_file, encoding='utf-8')
+    write_lines_to_file(sorted_lines, output_path, encoding='utf-8')
 
     print("Text file sorted by dates.")
 
 
 # todo: add, arg-pars,output as input form users main
-# todo: should take arguments,change main-name,so it corresponds to what it does
+# todo: should take arguments, change main-name, so it corresponds to what it does
 
 if __name__ == "__main__":
-    default_path = r"C:\Users\Jacob\Downloads\kazaniatxt.txt"
-    group_text_by_dates(default_path)
+    group_text_by_dates()
