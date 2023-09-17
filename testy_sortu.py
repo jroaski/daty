@@ -1,44 +1,53 @@
 import unittest
 from datetime import datetime
 from dates_sorter import *
+from parameterized import parameterized
+
 
 
 class FunctionsTests(unittest.TestCase):
-    def test_get_date_valid(self):
-        line = "Some text  01.08.2023 random  different words"
+    @parameterized.expand([
+        ("01.08.2023", datetime(2023, 8, 1)),
+        ("02.08.2023", datetime(2023, 8, 2)),
+
+    ])
+    def test_valid_date(self, line, expected):
         result = get_date(line)
-        expected = datetime(2023, 8, 1)
         self.assertEqual(result, expected)
 
-    def test_get_date_invalid(self):
-        line = "Text without date"
+    @parameterized.expand([
+        ("Text without date", None),
+        ("Another text without date", None),
+        # Add more test cases here as needed
+    ])
+    def test_invalid_date(self, line, expected):
         result = get_date(line)
         self.assertIsNone(result)
-# parameterise?
-#change name to be more straightforward
-    def test_key_valid_date(self):
-        group = ["10.08.2023 Some text"]
-        result = sort_key(group)
-        expected = datetime(2023, 8, 10)
+
+    @parameterized.expand([
+        (["10.08.2023 Some text"], datetime(2023, 8, 10)),
+        # Add more test cases here as needed
+    ])
+    def test_key_valid_date(self, lines, expected):
+        date_line_dict = group_lines_by_dates(lines)
+        sorted_lines = sort_and_flatten_groups(date_line_dict)
+        result = get_date(sorted_lines[0])  # Get the date from the first line in the sorted list
         self.assertEqual(result, expected)
-
-
-# what if date is inside the line, not at the beginning of it
-    def test_lines_by_dates(self):
-        lines = [
-            "01.08.2023 radom shrandom words",
-            "Text 2",
-            "02.08.2023 Text 3",
-            "03.08.2023 Text 4",
-        ]
-        result = group_lines_by_dates(lines)
-        expected = [
+    @parameterized.expand([
+        (["01.08.2023 radom shrandom words", "Text 2", "02.08.2023 Text 3", "03.08.2023 Text 4"], [
             ["01.08.2023 radom shrandom words", "Text 2"],
             ["02.08.2023 Text 3"],
             ["03.08.2023 Text 4"],
-        ]
-        self.assertEqual(result, expected)
+        ]),
+        # Add more test cases here as needed
+    ])
+    def test_lines_by_dates(self, lines, expected):
+        date_line_dict = group_lines_by_dates(lines)
+        # I have no other idea how to approach this than converting date_line_dict to a list of lists
 
+        actual = [value for value in date_line_dict.values()]
+
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()
