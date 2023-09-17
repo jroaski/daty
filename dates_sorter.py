@@ -1,4 +1,3 @@
-import os
 import re
 from datetime import datetime
 from typing import List, Dict, Optional
@@ -6,14 +5,12 @@ import argparse
 import logging
 from collections import defaultdict
 
-# Configure logging
+
 logging.basicConfig(filename='log.txt', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-# Define date formats
 date_formats = ["%d.%m.%Y", "%Y-%m-%d", "%d-%m-%Y"]
 
-# Define a regular expression pattern for date detection
 date_pattern = rf"\d{{2}}[-./]\d{{2}}[-./]\d{{4}}|\d{{4}}[-./]\d{{2}}[-./]\d{{2}}"
 
 
@@ -81,11 +78,16 @@ def sort_and_flatten_groups(date_line_dict: Dict[datetime, List[str]]) -> List[s
     return sorted_lines
 
 
-def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf-8') -> None:
+def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf-8', date_format="%d.%m.%Y") -> None:
     with open(output_file, 'w', encoding=encoding) as f:
-        f.writelines(lines)
-
-
+        for line in lines:
+            if re.search(date_pattern, line):
+                date = get_date(line)
+                if date:
+                    formatted_date = date.strftime(date_format)
+                    f.write(formatted_date + "\n")
+            else:
+                f.write(line)
 def group_text_by_dates():
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
     parser.add_argument("--use_default", action="store_true")
