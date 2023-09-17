@@ -3,12 +3,12 @@ import re
 from datetime import datetime
 from typing import List, Dict, Optional
 import argparse
+import logging
 from collections import defaultdict
 
-# todo: regex instead of dividing by words
-
-# todo: add info if a block of text has no date assigned
-# todo: logging, as in file logs, import logging...
+# Configure logging
+logging.basicConfig(filename='log.txt', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 # Define date formats
 date_formats = ["%d.%m.%Y", "%Y-%m-%d", "%d-%m-%Y"]
@@ -45,6 +45,7 @@ def get_valid_file_path(prompt: str, default_path: str) -> str:
                 return input_file
             else:
                 print("Invalid path. Please provide a valid file path.")
+                logging.warning(f"Invalid file path provided: {input_file}")
 
 
 def read_lines_from_file(file_path: str, encoding: str = 'utf-8') -> List[str]:
@@ -68,6 +69,8 @@ def group_lines_by_dates(lines: List[str]) -> Dict[datetime, List[str]]:
 
         if current_date:
             date_line_dict[current_date].append(line)
+        else:
+            logging.warning(f"Line without date: {line.strip()}")
 
     return date_line_dict
 
@@ -85,9 +88,8 @@ def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf
 
 def group_text_by_dates():
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
-    parser.add_argument("--use_default", action="store_true", help="Use the default input file path")
-    parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt",
-                        help="Path to the input text file")
+    parser.add_argument("--use_default", action="store_true")
+    parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt")
     parser.add_argument("--output_file", type=str, default="sorted_output.txt",
                         help="Path to the output sorted text file")
 
