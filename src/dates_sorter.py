@@ -6,8 +6,14 @@ import argparse
 import logging
 from collections import defaultdict
 
-# Configure logging
-logging.basicConfig(filename='log.txt', level=logging.INFO,
+# check flask/ fast api, rest API, so it takes a file as an input and produces a file as output
+# dates_sorter should be used as dependencies for the service/rest api
+# pre-commit <-check
+
+# Clean up virtual environment, so it has only pip/wheel installed
+
+# Configure logging so it's used instead of printing
+logging.basicConfig(filename='../log.txt', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 # Define date formats
@@ -54,18 +60,17 @@ def read_lines_from_file(file_path: str, encoding: str = 'utf-8') -> List[str]:
     return lines
 
 
-# todo: date as a key in dict, lines just as a value, lists
-# todo: check defaultdict
+# defaultdict has a date which is the key in the dict, and value would be the line
 
 def group_lines_by_dates(lines: List[str]) -> Dict[str, List[str]]:
     date_line_dict = defaultdict(list)
     current_date = None
-    list_of_dates=[]
+    list_of_dates = []
 
     for line in lines:
         date = get_date(line)
         if date in list_of_dates:
-            current_date=date
+            current_date = date
         else:
             if date:
                 current_date = date
@@ -100,14 +105,18 @@ def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf
         f.write('\n'.join(lines))
 
 
-def group_text_by_dates():
+# check if default is ACTUALLY default
+# make it so whel launching the script from terminal
+def group_text_by_dates():  # should take input path, output path
+
+    # this should be separated from def_group_by_dates so i just pass arguments to group_text_by_dates and it works
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
     parser.add_argument("--use_default", action="store_true")
     parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt")
     parser.add_argument("--output_file", type=str, default="sorted_output.txt")
 
     args = parser.parse_args()
-
+    # when launching the script from terminal it shouldn't ask for default path while is provided by -arguments at launch
     if args.use_default:
         input_path = args.input_file
     else:
