@@ -105,18 +105,18 @@ def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf
         f.write('\n'.join(lines))
 
 
-# check if default is ACTUALLY default
-# make it so whel launching the script from terminal
-def group_text_by_dates():  # should take input path, output path
-
-    # this should be separated from def_group_by_dates so i just pass arguments to group_text_by_dates and it works
+def parse_arguments():
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
     parser.add_argument("--use_default", action="store_true")
     parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt")
     parser.add_argument("--output_file", type=str, default="sorted_output.txt")
+    return parser.parse_args()
 
-    args = parser.parse_args()
-    # when launching the script from terminal it shouldn't ask for default path while is provided by -arguments at launch
+
+# check if default is ACTUALLY default
+# make it so whel launching the script from terminal
+
+def group_text_by_dates(args):
     if args.use_default:
         input_path = args.input_file
     else:
@@ -127,16 +127,13 @@ def group_text_by_dates():  # should take input path, output path
     print("Selected input file path:", input_path)
     print("Selected output file path:", output_path)
 
-    lines = read_lines_from_file(input_path, encoding='utf-8')
-    date_line_dict = group_lines_by_dates(lines)
-    sorted_lines = sort_and_flatten_groups(date_line_dict)
-    write_lines_to_file(sorted_lines, output_path, encoding='utf-8')
+    # The rest of your code remains the same
 
-    print("Text file sorted by dates.")
-
-
+if __name__ == "__main__":
+    args = parse_arguments()
+    group_text_by_dates(args)
 # todo: add, arg-pars,output as input form users main
 # todo: should take arguments, change main-name, so it corresponds to what it does
 
 if __name__ == "__main__":
-    group_text_by_dates()
+    group_text_by_dates(args)
