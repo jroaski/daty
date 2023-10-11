@@ -8,7 +8,7 @@ from dates_sorter import *
 app = Flask(__name__)
 
 
-# Define a route for your web interface
+
 @app.route('/', methods=['POST','GET'])
 def index():
     return render_template('index.html')
@@ -24,7 +24,7 @@ def upload_file():
         file_path = 'uploads/' + uploaded_file.filename
         uploaded_file.save(file_path)
 
-        # Process the file using your existing script
+        # Process the file
         lines = dates_sorter.read_lines_from_file(file_path, encoding='utf-8')
         date_line_dict = group_lines_by_dates(lines)
         sorted_lines = sort_and_flatten_groups(date_line_dict)

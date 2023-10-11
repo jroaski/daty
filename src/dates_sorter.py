@@ -107,6 +107,8 @@ def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf
 
 # check if default is ACTUALLY default
 # make it so whel launching the script from terminal
+
+#HAVE TO CHANGE THE WAY IN WHICH THE FILE IS TAKEN TO PRECESS
 def group_text_by_dates(input_file, output_file, use_default=False):
     if not use_default:
         input_file = get_valid_file_path("Enter the path to the input text file: ", input_file)
