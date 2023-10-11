@@ -105,35 +105,24 @@ def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf
         f.write('\n'.join(lines))
 
 
-def parse_arguments():
+# check if default is ACTUALLY default
+# make it so whel launching the script from terminal
+def group_text_by_dates(input_file, output_file, use_default=False):
+    if not use_default:
+        input_file = get_valid_file_path("Enter the path to the input text file: ", input_file)
+
+    lines = read_lines_from_file(input_file, encoding='utf-8')
+    date_line_dict = group_lines_by_dates(lines)
+    sorted_lines = sort_and_flatten_groups(date_line_dict)
+    write_lines_to_file(sorted_lines, output_file, encoding='utf-8')
+
+    print("Text file sorted by dates.")
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
     parser.add_argument("--use_default", action="store_true")
     parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt")
     parser.add_argument("--output_file", type=str, default="sorted_output.txt")
-    return parser.parse_args()
 
-
-# check if default is ACTUALLY default
-# make it so whel launching the script from terminal
-
-def group_text_by_dates(args):
-    if args.use_default:
-        input_path = args.input_file
-    else:
-        input_path = get_valid_file_path("Enter the path to the input text file: ", args.input_file)
-
-    output_path = args.output_file
-
-    print("Selected input file path:", input_path)
-    print("Selected output file path:", output_path)
-
-    # The rest of your code remains the same
-
-if __name__ == "__main__":
-    args = parse_arguments()
-    group_text_by_dates(args)
-# todo: add, arg-pars,output as input form users main
-# todo: should take arguments, change main-name, so it corresponds to what it does
-
-if __name__ == "__main__":
-    group_text_by_dates(args)
+    args = parser.parse_args()
+    group_text_by_dates(args.input_file, args.output_file, args.use_default)
