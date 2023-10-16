@@ -6,20 +6,29 @@ import argparse
 import logging
 from collections import defaultdict
 
+
+
 # check flask/ fast api, rest API, so it takes a file as an input and produces a file as output
 # dates_sorter should be used as dependencies for the service/rest api
 # pre-commit <-check
 
-# Clean up virtual environment, so it has only pip/wheel installed
+#todo pipenv poetry
+#todo add requirements.txt
+#todo  Clean up virtual environment, so it has only pip/wheel installed!!!
+#todo postgressql
+#todo check databases models in itself
+#todo input file should be saved, same goes to output file (CHECK DATABASES IN GENERAL) Check MongoDB in corelation to< database models(?) https://hub.docker.com/_/mongo
 
-# Configure logging so it's used instead of printing
+#todo Should have a date at which file was created, eg: "created at"/ version of the app should be saved
+#todo DOCKER COMPOSE, Contener is connected to app, and a separate for database/ separate for frontend
+#todo NGNIX <- check, should be able to set up my file as a static file (todo https://hub.docker.com/_/nginx/ )
 logging.basicConfig(filename='../log.txt', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-# Define date formats
+
 date_formats = ["%d.%m.%Y", "%Y-%m-%d", "%d-%m-%Y"]
 
-# Define a regular expression pattern for date detection
+
 date_pattern = rf"\d{{2}}[-./]\d{{2}}[-./]\d{{4}}|\d{{4}}[-./]\d{{2}}[-./]\d{{2}}"
 
 
@@ -94,7 +103,7 @@ def sort_and_flatten_groups(date_line_dict: Dict[str, List[str]]) -> List[str]:
         # Add text lines
         sorted_lines.extend(date_line_dict[date])
 
-        # Add an empty line for separation
+        #todo  Add an empty line for separation
         sorted_lines.append("")
 
     return sorted_lines

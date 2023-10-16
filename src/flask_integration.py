@@ -1,22 +1,25 @@
 from flask import Flask, request, render_template, send_file, make_response
-import os
-from datetime import datetime
+
 import dates_sorter
 from dates_sorter import *
 
 
-app = Flask(__name__)
+#todo create tests for flask_integration
 
+app = Flask(__name__)
+#todo: logger should produce files
 log_filename = 'flask_integration.log'
 logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #route for web interface
+
 @app.route('/', methods=['POST','GET'])
 def index():
     app.logger.info("Accessed the index route.")  # Log this event
     return render_template('index.html')
 
 # route to handle the file upload
+
 @app.route('/upload', methods=['POST','GET'])
 def upload_file():
     app.logger.info("Received a request to upload a file.")
@@ -30,7 +33,7 @@ def upload_file():
     if uploaded_file.filename == '':
         app.logger.error("No selected file.")
         return "No selected file"
-
+#todo each file should be saved as a new one(timestamp for example, input file name, tells if it's sorted, timestamp)
     if uploaded_file:
         sorted_file_path = 'sorted_output.txt'  # Define the path for the sorted output file
         # Process the file using script
