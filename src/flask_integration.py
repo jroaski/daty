@@ -7,34 +7,41 @@ from dates_sorter import *
 
 app = Flask(__name__)
 
+log_filename = 'flask_integration.log'
+logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-
+#route for web interface
 @app.route('/', methods=['POST','GET'])
 def index():
+    app.logger.info("Accessed the index route.")  # Log this event
     return render_template('index.html')
 
-
-# Define a route to handle the file upload
+# route to handle the file upload
 @app.route('/upload', methods=['POST','GET'])
 def upload_file():
+    app.logger.info("Received a request to upload a file.")
+
+    if 'file' not in request.files:
+        app.logger.error("No file part in the request.")
+        return "No file part"
+
     uploaded_file = request.files['file']
 
+    if uploaded_file.filename == '':
+        app.logger.error("No selected file.")
+        return "No selected file"
+
     if uploaded_file:
-        # Save the uploaded file
-        file_path = 'uploads/' + uploaded_file.filename
-        uploaded_file.save(file_path)
+        sorted_file_path = 'sorted_output.txt'  # Define the path for the sorted output file
+        # Process the file using script
+        dates_sorter.sort_text_by_dates(uploaded_file, sorted_file_path)
 
-        # Process the file
-        lines = dates_sorter.read_lines_from_file(file_path, encoding='utf-8')
-        date_line_dict = group_lines_by_dates(lines)
-        sorted_lines = sort_and_flatten_groups(date_line_dict)
-        sorted_file_path = 'sorted_output.txt'
-        write_lines_to_file(sorted_lines, sorted_file_path, encoding='utf-8')
+        response = make_response(send_file(sorted_file_path))
+        response.headers['Content-Type'] = 'application/octet-stream'
+        response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(sorted_file_path)}'
 
-        # Return a download link for the sorted file
-        return return_pdf(filename=sorted_file_path)
-def return_pdf(filename):
-    return send_file(filename)
+        app.logger.info("File processed successfully and sent as a response.")
+        return response
 
 
 if __name__ == '__main__':

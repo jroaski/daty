@@ -120,6 +120,13 @@ def group_text_by_dates(input_file, output_file, use_default=False):
 
     print("Text file sorted by dates.")
 
+def sort_text_by_dates(input_file, output_path):
+    lines = input_file.read().decode('utf-8').splitlines()
+    date_line_dict = group_lines_by_dates(lines)
+    sorted_lines = sort_and_flatten_groups(date_line_dict)
+    write_lines_to_file(sorted_lines, output_path, encoding='utf-8')
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
     parser.add_argument("--use_default", action="store_true")
