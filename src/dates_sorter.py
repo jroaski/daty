@@ -45,7 +45,6 @@ def get_date(line: str) -> Optional[str]:
     return None
 
 
-# todo: normalize date format, while sorting date, it should sort by a key, which is a single type of date: DD-MM-YYYY
 # sorts by key and groups together lines, so it goes date-> text...
 
 
