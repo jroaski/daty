@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, send_file, make_response
 from datetime import datetime
 import dates_sorter
 from dates_sorter import *
-
+from flask_pymongo import PyMongo
 
 
 app = Flask(__name__)
@@ -11,6 +11,11 @@ log_filename = 'flask_integration.log'
 logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #route for web interface
+
+
+"""app.config["MONGO_URI"] = "mongodb://localhost:127.0.0.1/mydatabase"
+mongo = PyMongo(app)"""
+
 
 @app.route('/', methods=['POST','GET'])
 def index():
