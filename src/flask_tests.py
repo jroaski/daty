@@ -1,10 +1,8 @@
-from flask import Flask, request, render_template, send_file, make_response
-import dates_sorter
-from dates_sorter import *
 import unittest
 import requests
 class TestFlaskIntegration(unittest.TestCase):
 
+    """Test Flask integration"""
     def test_upload_file(self):
         with open(r'C:\Users\Jacob\Downloads\kazaniatxt.txt', 'rb') as test_file:
             files = {'file': ('test_file.txt', test_file)}
