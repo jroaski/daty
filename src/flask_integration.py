@@ -13,8 +13,8 @@ logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime
 #route for web interface
 
 
-"""app.config["MONGO_URI"] = "mongodb://localhost:127.0.0.1/mydatabase"
-mongo = PyMongo(app)"""
+app.config["MONGO_URI"] = "mongodb://mongo:27017/mydatabase"
+mongo = PyMongo(app)
 
 
 @app.route('/', methods=['POST','GET'])
@@ -41,7 +41,7 @@ def upload_file():
     if uploaded_file:
         sorted_file_path = 'sorted_output.txt'  # Define the path for the sorted output file
 
-        # Process the file using the modified script
+
         dates_sorter.sort_text_by_dates(uploaded_file, sorted_file_path)
 
         # Add the creation date to the processed file
