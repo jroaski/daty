@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="sdkUUID" value="d6e899b9-6da0-4c79-a53a-9f4ac3f26a5a" />
+  </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (daty)" project-jdk-type="Python SDK" />
   <component name="PyCharmProfessionalAdvertiser">
     <option name="shown" value="true" />

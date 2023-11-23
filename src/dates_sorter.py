@@ -7,23 +7,17 @@ import logging
 from collections import defaultdict
 
 
+# functional tests run in docker
+# pre-commit finish
 
-# check flask/ fast api, rest API, so it takes a file as an input and produces a file as output
-# dates_sorter should be used as dependencies for the service/rest api
-# pre-commit <-check
+# todo pipenv poetry
 
-#todo pipenv poetry
-#todo add requirements.txt
-#todo  Clean up virtual environment, so it has only pip/wheel installed!!!
-#todo postgressql
-#todo check databases models in itself
-#todo input file should be saved, same goes to output file (CHECK DATABASES IN GENERAL) Check MongoDB in corelation to< database models(?) https://hub.docker.com/_/mongo
-
-#todo Should have a date at which file was created, eg: "created at"/ version of the app should be saved
-#todo DOCKER COMPOSE, Contener is connected to app, and a separate for database/ separate for frontend
-#todo NGNIX <- check, should be able to set up my file as a static file (todo https://hub.docker.com/_/nginx/ )
-logging.basicConfig(filename='../log.txt', level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(
+    filename="../log.txt",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 
 date_formats = ["%d.%m.%Y", "%Y-%m-%d", "%d-%m-%Y"]
@@ -39,7 +33,8 @@ def get_date(line: str) -> Optional[str]:
         for date_format in date_formats:
             try:
                 date = datetime.strptime(date_str, date_format)
-                return date.strftime("%d.%m.%Y")  # Normalize to DD.MM.YYYY format
+                # Normalize to DD.MM.YYYY format
+                return date.strftime("%d.%m.%Y")
             except ValueError:
                 pass
     return None
@@ -62,13 +57,14 @@ def get_valid_file_path(prompt: str, default_path: str) -> str:
                 logging.warning(f"Invalid file path provided: {input_file}")
 
 
-def read_lines_from_file(file_path: str, encoding: str = 'utf-8') -> List[str]:
-    with open(file_path, 'r', encoding=encoding) as f:
+def read_lines_from_file(file_path: str, encoding: str = "utf-8") -> List[str]:
+    with open(file_path, "r", encoding=encoding) as f:
         lines = f.readlines()
     return lines
 
 
 # defaultdict has a date which is the key in the dict, and value would be the line
+
 
 def group_lines_by_dates(lines: List[str]) -> Dict[str, List[str]]:
     date_line_dict = defaultdict(list)
@@ -96,49 +92,55 @@ def group_lines_by_dates(lines: List[str]) -> Dict[str, List[str]]:
 def sort_and_flatten_groups(date_line_dict: Dict[str, List[str]]) -> List[str]:
     sorted_lines = []
 
-    sorted_dates = sorted(set(date_line_dict.keys()), key=lambda x: datetime.strptime(x, "%d.%m.%Y"), reverse=True)
+    sorted_dates = sorted(
+        set(date_line_dict.keys()),
+        key=lambda x: datetime.strptime(x, "%d.%m.%Y"),
+        reverse=True,
+    )
 
     for date in sorted_dates:
         # Add text lines
         sorted_lines.extend(date_line_dict[date])
 
-        #todo  Add an empty line for separation
         sorted_lines.append("")
 
     return sorted_lines
 
 
-def write_lines_to_file(lines: List[str], output_file: str, encoding: str = 'utf-8') -> None:
-    with open(output_file, 'w', encoding=encoding) as f:
-        f.write('\n'.join(lines))
+def write_lines_to_file(
+    lines: List[str], output_file: str, encoding: str = "utf-8"
+) -> None:
+    with open(output_file, "w", encoding=encoding) as f:
+        f.write("\n".join(lines))
 
 
-# check if default is ACTUALLY default
-# make it so whel launching the script from terminal
-
-#HAVE TO CHANGE THE WAY IN WHICH THE FILE IS TAKEN TO PRECESS
 def group_text_by_dates(input_file, output_file, use_default=False):
     if not use_default:
-        input_file = get_valid_file_path("Enter the path to the input text file: ", input_file)
+        input_file = get_valid_file_path(
+            "Enter the path to the input text file: ", input_file
+        )
 
-    lines = read_lines_from_file(input_file, encoding='utf-8')
+    lines = read_lines_from_file(input_file, encoding="utf-8")
     date_line_dict = group_lines_by_dates(lines)
     sorted_lines = sort_and_flatten_groups(date_line_dict)
-    write_lines_to_file(sorted_lines, output_file, encoding='utf-8')
+    write_lines_to_file(sorted_lines, output_file, encoding="utf-8")
 
     print("Text file sorted by dates.")
 
+
 def sort_text_by_dates(input_file, output_path):
-    lines = input_file.read().decode('utf-8').splitlines()
+    lines = input_file.read().decode("utf-8").splitlines()
     date_line_dict = group_lines_by_dates(lines)
     sorted_lines = sort_and_flatten_groups(date_line_dict)
-    write_lines_to_file(sorted_lines, output_path, encoding='utf-8')
+    write_lines_to_file(sorted_lines, output_path, encoding="utf-8")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sort text lines by dates.")
     parser.add_argument("--use_default", action="store_true")
-    parser.add_argument("--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt")
+    parser.add_argument(
+        "--input_file", type=str, default=r"C:\Users\Jacob\Downloads\kazaniatxt.txt"
+    )
     parser.add_argument("--output_file", type=str, default="sorted_output.txt")
 
     args = parser.parse_args()
