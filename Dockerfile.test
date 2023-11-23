@@ -1,0 +1,13 @@
+FROM python:3.11
+
+CMD pwd && ls -la
+
+COPY ./src .
+
+COPY ./test
+
+RUN pip install --no-cache-dir -r src/requirements.txt
+
+RUN python -m unittest discover -s /test
+
+

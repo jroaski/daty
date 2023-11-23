@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Integration</title>
+</head>
+<body>
+    <h1>Flask Integration is Running!</h1>
+</body>
+</html>

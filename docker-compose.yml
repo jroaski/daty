@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./src
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/usr/src/app
+    command: python -m flask run --host=0.0.0.0 --port=8080
+    depends_on:
+      - mongo
+    environment:
+      - FLASK_APP=flask_integration.py
+      - FLASK_ENV=development
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  test:
+    build:
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./src:/usr/src/app
+      - ./test:/tests
+    #depends_on:
+    #- web
+    environment:
+      - FLASK_APP_URL=http://web:8080
+    command: python -m unittest discover -s /tests
+
+volumes:
+  mongo-data:
